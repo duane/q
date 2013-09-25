@@ -1,11 +1,29 @@
-package q
+package main
 
-type QueueState Queue
+import (
+  "labix.org/v2/mgo/bson"
+)
 
-func (state *QueueState) Save() ([]byte, error) {
-
+func (state *Queue) Save() (data []byte, err error) {
+  l := state.List
+  array := []interface{}{}
+  for e := l.Front(); e != nil; e = e.Next() {
+    array = append(array, *e.Value.(*interface{}))
+  }
+  data, err = bson.Marshal(bson.M{"Queue": array})
+  return
 }
 
-func (state *QueueState) Recovery([]byte) error {
+func (state *Queue) Recovery(data []byte) (err error) {
+  var unmarshalled bson.M
+  err = bson.Unmarshal(data, &unmarshalled)
+  if err != nil {
+    return
+  }
+  array := unmarshalled["Queue"].([]interface{})
 
+  for _, e := range array {
+    state.Enqueue(e)
+  }
+  return
 }

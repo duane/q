@@ -1,30 +1,27 @@
-package q
+package main
 
 import (
   "container/list"
 )
 
-type Atom []byte
-
 type Queue struct {
-  list *List
+  List *list.List
+}
+
+func NewQueue() (queue *Queue) {
+  queue = &Queue{List: list.New()}
+  queue.List = queue.List.Init()
+  return
 }
 
 func (queue *Queue) Enqueue(x interface{}) {
-  _ = queue.list.PushBack(x.(*Atom))
+  _ = queue.List.PushBack(&x)
 }
 
 func (queue *Queue) Dequeue() interface{} {
-  e := queue.list.Remove(queue.list.Front())
+  return *queue.List.Remove(queue.List.Front()).(*interface{})
 }
 
 func (queue *Queue) Len() int {
-  return len(queue.Heap)
-}
-
-func (queue *Queue) Iterate() (send <-chan *Atom, quit chan<- bool) {
-  e := queue.list.Front()
-  for e {
-
-  }
+  return queue.List.Len()
 }
